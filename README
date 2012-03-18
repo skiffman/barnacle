@@ -5,11 +5,10 @@ Skiffman Barnacle Fork
 - fixes checkbox issues in clients listview when NAT filtering is 
   used and number of clients in listview is greater than screen
 - fixes first time 'no clients' toast not toasting when there are no clients
-  adds feature of toasting 'no clients' on resume when there are no clients 
+  adds feature? of toasting 'no clients' on resume when there are no clients 
 - fixes 'WIFI:Could not set ad-hoc mode', 'WIFI:Could not set ssid', 
-  'Stopped unexpectedly' which happens on my phone (Samsung Previal w/ GB EJ06)
-   when stopping and then restarting  
-   
+  'Stopped unexpectedly' which happens on my phone (Samsung Previal w/ GB EJ06) 
+  when stopping and then restarting
 
 Barnacle Wifi Tether
 ====================

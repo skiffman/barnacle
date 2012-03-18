@@ -51,7 +51,7 @@ public class BarnacleApp extends android.app.Application {
     /* skiffman */
     ArrayList<String> allowedmacs = new ArrayList<String>();  // used for selected mac persistence
     /* end skiffman */
-	
+
     final static String TAG = "BarnacleApp";
 
     final static String FILE_SCRIPT = "setup";
@@ -110,11 +110,11 @@ public class BarnacleApp extends android.app.Application {
         // initialize default values if not done this in the past
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        
+
         /* skiffman */ 
         allowedmacs = getStringArrayPref("allowed_macs");  // allowed macs persistence
         /* end skiffman */
-        
+
         // upgrade some missing preferences
         if (!prefs.contains("client_notify"))
             prefs.edit().putBoolean("client_notify", true).commit();
@@ -254,12 +254,12 @@ public class BarnacleApp extends android.app.Application {
                             getString(R.string.notify_client) + " " + cd.toNiceString(), contentIntent);
             notificationManager.notify(NOTIFY_CLIENT, notificationClientAdded);
         }
-        
+
         /* skiffman */
         if (prefs.getBoolean("nat_filter", false) && cd.allowed == true)
-        	service.filterRequest(cd.mac, true);
+            service.filterRequest(cd.mac, true);
         else
-        /* skiffman */	
+        /* skiffman */
         if (prefs.getBoolean("client_allow", false)) {
             cd.allowed = true;
             service.filterRequest(cd.mac, true);
@@ -497,7 +497,7 @@ public class BarnacleApp extends android.app.Application {
         if ((service != null) && (service.getState() == BarnacleService.STATE_STOPPED))
             processStopped(); // clean up notifications
     }
-        
+
     /* skiffman added these methods */
     public ArrayList<String> getStringArrayPref(String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -507,7 +507,7 @@ public class BarnacleApp extends android.app.Application {
             try {
                 JSONArray jsa = new JSONArray(json);
                 for (int i = 0; i < jsa.length(); i++)
-                	a.add(jsa.optString(i));
+                    a.add(jsa.optString(i));
                     
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -515,21 +515,20 @@ public class BarnacleApp extends android.app.Application {
         }
         return a;
     }
-    
+
     public void setStringArrayPref(String key, ArrayList<String> values) {
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-	    SharedPreferences.Editor editor = prefs.edit();
-	    JSONArray jsa = new JSONArray();
-	    for (int i = 0; i < values.size(); i++) {
-	        jsa.put(values.get(i));
-	    }
-	    if (!values.isEmpty()) {
-	        editor.putString(key, jsa.toString());
-	    } else {
-	        editor.remove(key);
-	    }
-	    editor.commit();
-	}
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        JSONArray jsa = new JSONArray();
+        for (int i = 0; i < values.size(); i++) {
+            jsa.put(values.get(i));
+        }
+        if (!values.isEmpty()) {
+            editor.putString(key, jsa.toString());
+        } else {
+            editor.remove(key);
+        }
+        editor.commit();
+    }
     /* end skiffman added methods */
 }
-

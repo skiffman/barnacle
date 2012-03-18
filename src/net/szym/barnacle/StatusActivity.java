@@ -65,7 +65,7 @@ public class StatusActivity extends android.app.TabActivity {
         nf.setMinimumFractionDigits(2);
         nf.setMinimumIntegerDigits(1);
     }
-    
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,13 +85,13 @@ public class StatusActivity extends android.app.TabActivity {
                 onoff.setPressed(true);
                 if (onoff.isChecked())
                 {
-                	/* skiffman */
-                	// work around for 'WIFI:Could not set ad-hoc mode' and 'WIFI:Could not set ssid', 'Stopped unexpectedly'
-                	// which happens on my phone when stopping and then restarting service
-                	((WifiManager) getSystemService(Context.WIFI_SERVICE)).setWifiEnabled(true);
+                    /* skiffman */
+                    // work around for 'WIFI:Could not set ad-hoc mode' and 'WIFI:Could not set ssid', 'Stopped unexpectedly'
+                    // which happens on my phone when stopping and then restarting service
+                    ((WifiManager) getSystemService(Context.WIFI_SERVICE)).setWifiEnabled(true);
                     Log.i("Barnacle", "Enabled Wifi");
-                    /* end skiffman */  
-                	app.startService();
+                    /* end skiffman */
+                    app.startService();
                 }
                 else {
                     app.stopService();
