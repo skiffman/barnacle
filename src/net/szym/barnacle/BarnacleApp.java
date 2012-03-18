@@ -162,6 +162,12 @@ public class BarnacleApp extends android.app.Application {
     }
 
     public void startService() {
+        /* skiffman */
+        // work around for 'WIFI:Could not set ad-hoc mode' and 'WIFI:Could not set ssid', 'Stopped unexpectedly'
+        // which happens on my phone when stopping and then restarting service
+        wifiManager.setWifiEnabled(true);
+        Log.i(TAG, "Enabled Wifi before service start");
+        /* end skiffman */
         if (service == null)
             startService(new Intent(this, BarnacleService.class));
     }

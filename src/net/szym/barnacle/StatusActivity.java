@@ -85,7 +85,7 @@ public class StatusActivity extends android.app.TabActivity {
                 onoff.setPressed(true);
                 if (onoff.isChecked())
                 {
-                    /* skiffman */
+                    /* skiffman < MOVED TO BarnacleApp:startService() >
                     // work around for 'WIFI:Could not set ad-hoc mode' and 'WIFI:Could not set ssid', 'Stopped unexpectedly'
                     // which happens on my phone when stopping and then restarting service
                     ((WifiManager) getSystemService(Context.WIFI_SERVICE)).setWifiEnabled(true);
