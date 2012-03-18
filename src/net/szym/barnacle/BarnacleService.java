@@ -107,7 +107,7 @@ public class BarnacleService extends android.app.Service {
     private boolean filteringEnabled = false;
     private Method mStartForeground = null;
 
-    /** public service interface */
+    /** public service interface */ 
     public void startRequest() {
         mHandler.sendEmptyMessage(MSG_START);
     }
@@ -332,7 +332,7 @@ public class BarnacleService extends android.app.Service {
             }
             break;
         case MSG_STOP:
-            if (state == STATE_STOPPED) return;
+        	if (state == STATE_STOPPED) return;
             stopProcess();
             log(false, getString(R.string.stopped));
             state = STATE_STOPPED;
@@ -411,8 +411,21 @@ public class BarnacleService extends android.app.Service {
                 break;
             }
         }
-        clients.add(cd);
+        
+        /* skiffman */        
+        if (firstConnect == true)  // on first connect of each client see if it is a mac in the persistence allowed list
+        {
+        	for (int i = 0; i < app.allowedmacs.size(); ++i) {
+        		if (app.allowedmacs.get(i).equals(cd.mac)) {
+        			cd.allowed = true;
+        			break;
+        		}
+        	}	
+        }
+        /* end skiffman */
 
+        clients.add(cd);
+        
         if (nat_ctrl == null)
             connectToNat(); // re-attempt to connect
 

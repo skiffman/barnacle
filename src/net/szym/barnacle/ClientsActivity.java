@@ -36,7 +36,7 @@ public class ClientsActivity extends android.app.ListActivity {
     private BarnacleApp app;
     private BaseAdapter adapter;
     private ArrayList<BarnacleService.ClientData> clients = new ArrayList<BarnacleService.ClientData>();
-
+    
     private static class ViewHolder {
         TextView macaddress;
         TextView ipaddress;
@@ -62,7 +62,7 @@ public class ClientsActivity extends android.app.ListActivity {
 
                 ViewHolder holder;
 
-                if (convertView == null) {
+                if (convertView == null) { 
                     View view = getLayoutInflater().inflate(R.layout.clientrow, null);
                     holder = new ViewHolder();
                     holder.macaddress = (TextView) view.findViewById(R.id.macaddress);
@@ -74,6 +74,10 @@ public class ClientsActivity extends android.app.ListActivity {
                 } else {
                     holder = (ViewHolder) convertView.getTag();
                 }
+                
+                /* skiffman */
+                holder.allowed.setTag(client); // fix for checkbox problems in listview
+                /* end skiffman */
 
                 holder.macaddress.setText(client.mac);
                 holder.ipaddress.setText(client.ip);
@@ -83,14 +87,31 @@ public class ClientsActivity extends android.app.ListActivity {
                     holder.allowed.setVisibility(CheckBox.VISIBLE);
                     holder.allowed.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                         @Override
+                        /* skiffman */
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            client.allowed = isChecked;
-                            if (app.service != null) {
-                                app.service.filterRequest(client.mac, client.allowed);
-                            } else {
-                                buttonView.setVisibility(View.INVISIBLE); // is it not confusing?
-                            }
+                           	BarnacleService.ClientData client = (BarnacleService.ClientData) buttonView.getTag(); 
+                        	
+                        	if (client.allowed != isChecked) { // only update if checkbox really changed... sometimes onCheckedChanged gets called when no change is done. this doesn't seem to happen when in landscape layout.
+                        		client.allowed = isChecked;
+                        	                        		
+                        		for (int i = 0; i < app.allowedmacs.size(); ++i) {
+                        			if (app.allowedmacs.get(i).equals(client.mac)) {
+                        				app.allowedmacs.remove(i);
+                        				break;
+                        			}
+                        		}	
+                        		if (client.allowed)
+                        			app.allowedmacs.add(client.mac);
+                           		
+                        		app.setStringArrayPref("allowed_macs", app.allowedmacs);  // client persistence                     		
+                        		
+                        		if (app.service != null)        	
+                        			app.service.filterRequest(client.mac, client.allowed);
+                        		else 
+                        		   	buttonView.setVisibility(View.INVISIBLE); // is it not confusing? ...oxymoron...
+                           	}
                         }
+                        /* end skiffman */
                     });
                 } else {
                     holder.allowed.setVisibility(View.INVISIBLE);
@@ -117,21 +138,26 @@ public class ClientsActivity extends android.app.ListActivity {
                 holder.allowed.performClick();
             }
         });
+            
     }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
         app.setClientsActivity(null);
     }
-
+    
     @Override
     protected void onResume() {
         super.onResume();
         app.cancelClientNotify();
         update();
-
-        if (hasWindowFocus() && clients.isEmpty())
-            app.updateToast(getString(R.string.noclients), false);
+               
+        /* skiffman */
+        if (app.service != null && clients.isEmpty()) // solves first time clients tab select not toasting 'no clients' when there are no clients  
+        /* end skiffman */                            // adds feature of 'no clients' toast on resume when there are no clients 	
+        //if (hasWindowFocus() && clients.isEmpty())  
+        	app.updateToast(getString(R.string.noclients), false);       
     }
 
     public void update() {
