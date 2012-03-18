@@ -81,7 +81,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         } // else don't update summary
         return true;
     }
-    
+
     /* skiffman */
     // hacky way to prevent service start after settings activity
     @Override
