@@ -18,13 +18,11 @@
 
 package net.szym.barnacle;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
@@ -83,12 +81,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     }
 
     /* skiffman */
-    // hacky way to prevent service start after settings activity
     @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putBoolean("camefromsettings", true).commit();
+    protected void onPause() {
+        super.onPause();
+        ((BarnacleApp)getApplication()).lastActivityWasSettings = true;
     }
     /* skiffman end */
 }

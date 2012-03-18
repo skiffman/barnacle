@@ -38,7 +38,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,7 +48,8 @@ import android.widget.Toast;
 */
 public class BarnacleApp extends android.app.Application {
     /* skiffman */
-    ArrayList<String> allowedmacs = new ArrayList<String>();  // used for selected mac persistence
+    ArrayList<String> allowedmacs = new ArrayList<String>(); // used for selected mac persistence
+    boolean lastActivityWasSettings = false; // used to prevent auto start on return from settings activity
     /* end skiffman */
 
     final static String TAG = "BarnacleApp";
@@ -171,6 +171,16 @@ public class BarnacleApp extends android.app.Application {
     }
 
     public void startService() {
+        /* skiffman */
+        // work around for 'WIFI:Could not set ad-hoc mode' and
+        // 'WIFI:Could not set ssid', 'Stopped unexpectedly'
+        // which happens on my phone when stopping and then
+        // restarting service
+        if (!wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(true);
+            Log.w(TAG, "Enabled Wifi before service start");
+        }
+        /* end skiffman */
         if (service == null)
             startService(new Intent(this, BarnacleService.class));
     }
@@ -268,7 +278,7 @@ public class BarnacleApp extends android.app.Application {
         if (prefs.getBoolean("nat_filter", false) && cd.allowed == true)
             service.filterRequest(cd.mac, true);
         else
-        /* skiffman */	
+        /* skiffman */
         if (prefs.getBoolean("client_allow", false)) {
             cd.allowed = true;
             service.filterRequest(cd.mac, true);
@@ -509,8 +519,7 @@ public class BarnacleApp extends android.app.Application {
 
     /* skiffman added these methods */
     public ArrayList<String> getStringArrayPref(String key) {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String json = prefs.getString(key, null);
         ArrayList<String> a = new ArrayList<String>();
         if (json != null) {
@@ -518,9 +527,8 @@ public class BarnacleApp extends android.app.Application {
                 JSONArray jsa = new JSONArray(json);
                 for (int i = 0; i < jsa.length(); i++)
                     a.add(jsa.optString(i));
-
             } catch (JSONException e) {
-                e.printStackTrace();
+                return null;
             }
         }
         return a;

@@ -22,13 +22,10 @@ import java.text.NumberFormat;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,14 +81,6 @@ public class StatusActivity extends android.app.TabActivity {
             public void onClick(View v) {
                 onoff.setPressed(true);
                 if (onoff.isChecked()) {
-                    /* skiffman */
-                    // work around for 'WIFI:Could not set ad-hoc mode' and
-                    // 'WIFI:Could not set ssid', 'Stopped unexpectedly'
-                    // which happens on my phone when stopping and then
-                    // restarting service
-                    ((WifiManager) getSystemService(Context.WIFI_SERVICE)).setWifiEnabled(true);
-                    Log.i("Barnacle", "Enabled Wifi");
-                    /* end skiffman */
                     app.startService();
                 }
                 else {
@@ -254,8 +243,7 @@ public class StatusActivity extends android.app.TabActivity {
         super.onPause();
         paused = true;
         /* skiffman */
-        // hacky way to prevent service start after settings activity
-        app.prefs.edit().putBoolean("camefromsettings", false).commit();
+        app.lastActivityWasSettings = false;
         /* end skiffman */
     }
     @Override
@@ -266,17 +254,8 @@ public class StatusActivity extends android.app.TabActivity {
         app.cleanUpNotifications();
 
         /* skiffman */
-        // hacky way to prevent service start after settings activity
-        if (!app.prefs.getBoolean("camefromsettings", false)) {
+        if (!app.lastActivityWasSettings) {
             if (app.service == null	&& app.prefs.getBoolean("lan_autostart", true)) {
-                /* skiffman */
-                // work around for 'WIFI:Could not set ad-hoc mode' and
-                // 'WIFI:Could not set ssid', 'Stopped unexpectedly'
-                // which happens on my phone when stopping and then restarting
-                // service
-                ((WifiManager) getSystemService(Context.WIFI_SERVICE)).setWifiEnabled(true);
-                Log.i("Barnacle", "Enabled Wifi");
-                /* end skiffman */
                 app.startService();
             }
         }
