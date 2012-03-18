@@ -252,6 +252,10 @@ public class StatusActivity extends android.app.TabActivity {
     protected void onPause() {
         super.onPause();
         paused = true;
+        /* skiffman */
+        // hacky way to prevent service start after settings activity
+        app.prefs.edit().putBoolean("camefromsettings", false).commit();
+        /* end skiffman */
     }
     @Override
     protected void onResume() {
@@ -259,6 +263,25 @@ public class StatusActivity extends android.app.TabActivity {
         paused = false;
         update();
         app.cleanUpNotifications();
+
+		/* skiffman */
+        // hacky way prevent service start after settings activity
+		if (!app.prefs.getBoolean("camefromsettings", false)) {
+			if (app.service == null
+					&& app.prefs.getBoolean("lan_autostart", true)) {
+				/* skiffman */
+				// work around for 'WIFI:Could not set ad-hoc mode' and
+				// 'WIFI:Could not set ssid', 'Stopped unexpectedly'
+				// which happens on my phone when stopping and then restarting
+				// service
+				((WifiManager) getSystemService(Context.WIFI_SERVICE))
+						.setWifiEnabled(true);
+				Log.i("Barnacle", "Enabled Wifi");
+				/* end skiffman */
+				app.startService();
+			}
+		}
+		/* end skiffman */
     }
     @Override
     protected void onNewIntent(Intent intent) {

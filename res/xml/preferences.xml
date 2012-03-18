@@ -39,6 +39,7 @@
         <CheckBoxPreference android:title="Auto Associate"
             android:summary="Associate every 5 seconds until a client connects"
             android:key="lan_autoassoc" />
+        <CheckBoxPreference android:key="lan_autostart" android:summary="Auto start on app start or resume" android:title="Auto start"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Clients">
         <CheckBoxPreference android:title="Access Control"

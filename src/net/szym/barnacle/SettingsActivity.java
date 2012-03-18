@@ -18,11 +18,13 @@
 
 package net.szym.barnacle;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
@@ -33,7 +35,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         R.string.nat_firstport, R.string.nat_numports, R.string.nat_queue, R.string.nat_timeout, R.string.nat_timeout_tcp,
         R.string.lan_script
     };
-    final static int[] checks = { R.string.nat_filter, R.string.nat_log, R.string.lan_wext };
+    final static int[] checks = { R.string.nat_filter, R.string.nat_log, R.string.lan_wext, R.string.lan_autostart };
 
     private void setSummary(Preference p, CharSequence s) {
         if ((s != null) && (s.length() > 0)) {
@@ -79,4 +81,14 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         } // else don't update summary
         return true;
     }
+    
+    /* skiffman */
+    // hacky way to prevent service start after settings activity
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean("camefromsettings", true).commit();
+    }
+    /* skiffman end */
 }

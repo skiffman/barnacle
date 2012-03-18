@@ -118,7 +118,11 @@ public class BarnacleApp extends android.app.Application {
         // upgrade some missing preferences
         if (!prefs.contains("client_notify"))
             prefs.edit().putBoolean("client_notify", true).commit();
-
+       /* skiffman */
+        if (!prefs.contains("lan_autostart"))
+        	prefs.edit().putBoolean("lan_autostart", false).commit();
+       /* end skiffman */
+        
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         notification = new Notification(R.drawable.barnacle, getString(R.string.notify_running), 0);
@@ -141,6 +145,11 @@ public class BarnacleApp extends android.app.Application {
             shouldDisableWifi = true;
         }
         wifiManager.startScan();
+        
+        /* skiffman */
+        if (prefs.getBoolean("lan_autostart", true))
+        	startService();
+        /* end skiffman */
     }
 
     @Override
